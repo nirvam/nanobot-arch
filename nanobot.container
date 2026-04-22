@@ -1,0 +1,23 @@
+[Unit]
+Description=Nanobot Gateway Service (Arch Linux/Podman)
+After=network-online.target
+
+[Container]
+# 引用本地构建的镜像
+Image=localhost/nanobot:arch
+ContainerName=nanobot-gateway
+# 运行命令
+Exec=gateway
+# 端口映射
+PublishPort=18790:18790
+# 挂载配置目录 (Quadlet 会自动处理 ~ 扩展，如果在用户模式下运行)
+Volume=%h/.nanobot:/root/.nanobot:Z
+Environment="PASSWORD_STORE_DIR=/root/.nanobot/workspace/password-store"
+
+[Service]
+# 故障自动重启
+Restart=on-failure
+
+[Install]
+# 随系统启动 (用户登录时启动)
+WantedBy=default.target
