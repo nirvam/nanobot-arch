@@ -1,0 +1,33 @@
+FROM archlinux:base-devel
+
+# 注入构建日期以打破缓存，确保滚动更新
+ARG BUILD_DATE
+RUN echo "Build date: $BUILD_DATE"
+
+# 安装必要依赖和agent常用工具
+RUN pacman -Syu --noconfirm --needed \
+    deno python-uv \
+    curl git jq ripgrep fd \
+    p7zip zstd && \
+    pacman -Scc --noconfirm
+
+# 设置虚拟环境，避免使用 --system
+ENV VIRTUAL_ENV=/opt/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# 直接从 PyPI 安装 nanobot-ai，包含 weixin 依赖
+ARG VERSION
+RUN if [ -n "$VERSION" ]; then \
+      uv pip install --no-cache-dir "nanobot-ai[weixin]==$VERSION"; \
+    else \
+      uv pip install --no-cache-dir "nanobot-ai[weixin]"; \
+    fi
+
+RUN mkdir -p /root/.nanobot
+VOLUME ["/root/.nanobot"]
+
+EXPOSE 18790
+
+ENTRYPOINT ["nanobot"]
+CMD ["status"]
