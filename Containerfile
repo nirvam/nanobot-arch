@@ -5,10 +5,12 @@ ARG BUILD_DATE
 RUN echo "Build date: $BUILD_DATE"
 
 # 安装必要依赖和agent常用工具
-RUN pacman -Syu --noconfirm --needed \
+RUN systemd-machine-id-setup && \
+    pacman-key --init && \
+    pacman -Syu --noconfirm --needed \
     deno python-uv \
     curl git jq ripgrep fd \
-    p7zip zstd && \
+    p7zip && \
     pacman -Scc --noconfirm
 
 # 设置虚拟环境，避免使用 --system

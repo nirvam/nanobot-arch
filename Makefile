@@ -12,12 +12,12 @@ QUADLET_DIR = $(HOME)/.config/containers/systemd
 
 build-arch:
 	@echo "Building Arch-based Podman image from PyPI..."
-	podman build --build-arg BUILD_DATE=$(shell date +%Y%m%d) -t $(IMAGE_NAME) -f Containerfile.arch .
+	podman build --build-arg BUILD_DATE=$(shell date +%Y%m%d) -t $(IMAGE_NAME) -f Containerfile .
 
 build-tag:
-	@if [ -z "$(TAG)" ]; then echo "Usage: make build-tag TAG=0.1.4.post6"; exit 1; fi
+	@if [ -z "$(TAG)" ]; then echo "Usage: make build-tag TAG=x.y.z.abcd"; exit 1; fi
 	@echo "Building Arch-based Podman image for tag $(TAG)..."
-	podman build --build-arg BUILD_DATE=$(shell date +%Y%m%d) --build-arg VERSION=$(TAG) -t $(IMAGE_REPO):$(TAG)-arch -f Containerfile.arch .
+	podman build --build-arg BUILD_DATE=$(shell date +%Y%m%d) --build-arg VERSION=$(TAG) -t $(IMAGE_REPO):$(TAG)-arch -f Containerfile .
 
 deploy-quadlet: build-arch
 	@echo "Deploying Quadlet to $(QUADLET_DIR)..."
